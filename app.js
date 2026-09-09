@@ -4,9 +4,10 @@
 const CONFIG = {
   socle: { label:"Socle technique & mise en service KNX", min:1200, max:3500, enabled:true },
   currency:"€",
-  leadMode:"console",        // "console" | "formspree" | "webhook"
+  leadMode:"wp",             // "console" | "formspree" | "webhook" | "wp"
   formspreeId:"",
   webhookUrl:"",
+  wpEndpoint:"https://www.smart-electro.fr/wp-admin/admin-ajax.php?action=se_lead",
 };
 
 const DATA = [
@@ -207,6 +208,7 @@ function submitLead(e){
   payload.projet=state.projet;
   payload.budget_min=t.min; payload.budget_max=t.max;
   payload.postes=Object.entries(state.qty).filter(([k,v])=>v>0).map(([k,v])=>k.split('|')[1]+' ×'+v).join(', ');
+  f.append('projet',payload.projet||''); f.append('budget_min',t.min); f.append('budget_max',t.max); f.append('postes',payload.postes||'');
   track('lead_submitted',{budget_min:t.min,budget_max:t.max});
 
   const done=()=>{ document.getElementById('leadBox').innerHTML=`
@@ -216,7 +218,10 @@ function submitLead(e){
       <p style="color:var(--muted);margin-top:6px">Merci ${payload.prenom||''}. On vous recontacte sous 48h avec votre chiffrage détaillé. À très vite&nbsp;!</p>
     </div>`; };
 
-  if(CONFIG.leadMode==='formspree' && CONFIG.formspreeId){
+  if(CONFIG.leadMode==='wp' && CONFIG.wpEndpoint){
+    f.append('action','se_lead');
+    fetch(CONFIG.wpEndpoint,{method:'POST',body:f}).then(done).catch(done);
+  } else if(CONFIG.leadMode==='formspree' && CONFIG.formspreeId){
     fetch('https://formspree.io/f/'+CONFIG.formspreeId,{method:'POST',headers:{'Accept':'application/json'},body:f}).then(done).catch(done);
   } else if(CONFIG.leadMode==='webhook' && CONFIG.webhookUrl){
     fetch(CONFIG.webhookUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(done).catch(done);
