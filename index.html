@@ -827,6 +827,13 @@ function setStep(n){
   updateFoot();
   track('step_viewed',{step:n});
 }
+function scrollEst(){
+  try{
+    const c=document.getElementById('estimateur');
+    const y=c.getBoundingClientRect().top+window.pageYOffset-100; // -100 : passe sous le header du site
+    window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+  }catch(e){}
+}
 function next(){
   if(state.step===1 && !state.projet){shake();return;}
   if(state.step===2 && !state.univers.length){shake();return;}
@@ -834,9 +841,9 @@ function next(){
     const any=Object.values(state.qty).some(v=>v>0);
     if(!any){shake();return;}
   }
-  if(state.step<STEPS)setStep(state.step+1);
+  if(state.step<STEPS){setStep(state.step+1);scrollEst();}
 }
-function back(){ if(state.step>1)setStep(state.step-1); }
+function back(){ if(state.step>1){setStep(state.step-1);scrollEst();} }
 function shake(){const b=document.querySelector('.est-body');b.animate([{transform:'translateX(0)'},{transform:'translateX(-7px)'},{transform:'translateX(7px)'},{transform:'translateX(0)'}],{duration:260});}
 
 document.querySelectorAll('[data-single="projet"] .opt').forEach(o=>{
