@@ -257,6 +257,7 @@ document.querySelectorAll('[data-single="projet"] .opt').forEach(o=>{
   o.onclick=()=>{
     document.querySelectorAll('[data-single="projet"] .opt').forEach(x=>x.classList.remove('sel'));
     o.classList.add('sel'); state.projet=o.dataset.val;
+    setTimeout(()=>next(),260);   // auto-avance : choix unique => étape suivante sans "Continuer"
   };
 });
 document.getElementById('btnNext').onclick=next;
