@@ -589,7 +589,7 @@ const CONFIG = {
   leadMode:"wp",             // "console" | "formspree" | "webhook" | "wp"
   formspreeId:"",
   webhookUrl:"",
-  wpEndpoint:"https://www.smart-electro.fr/wp-admin/admin-ajax.php?action=se_lead",
+  wpEndpoint:"https://www.smart-electro.fr/?rest_route=/se/v1/lead",
 };
 
 const DATA = [
@@ -801,8 +801,7 @@ function submitLead(e){
     </div>`; };
 
   if(CONFIG.leadMode==='wp' && CONFIG.wpEndpoint){
-    f.append('action','se_lead');
-    fetch(CONFIG.wpEndpoint,{method:'POST',body:f}).then(done).catch(done);
+    fetch(CONFIG.wpEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(done).catch(done);
   } else if(CONFIG.leadMode==='formspree' && CONFIG.formspreeId){
     fetch('https://formspree.io/f/'+CONFIG.formspreeId,{method:'POST',headers:{'Accept':'application/json'},body:f}).then(done).catch(done);
   } else if(CONFIG.leadMode==='webhook' && CONFIG.webhookUrl){
