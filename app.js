@@ -1,3 +1,14 @@
+/* Restore the external stylesheet if WordPress removes content link tags. */
+(function ensureLandingStyles() {
+  const assetBase = 'https://pierre-louismercier-forgeone.github.io/smart-electro-devis/';
+  const styleUrl = assetBase + 'styles.css?v=7';
+  if (!Array.from(document.querySelectorAll('link[rel="stylesheet"]')).some(link => link.href.split('?')[0] === styleUrl.split('?')[0])) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = styleUrl;
+    document.head.appendChild(link);
+  }
+})();
 /* ============================================================
    CONFIG — À VALIDER PAR SMART ELECTRO
    ============================================================ */
